@@ -3,12 +3,12 @@ import json
 from datetime import datetime
 import time
 
-timeframe = '2015-05'
+timeFrame = '2015-05'
 sql_transaction = []
 start_row = 0
 cleanup = 1000000
 
-connection = sqlite3.connect('{}.db'.format(timeframe))
+connection = sqlite3.connect('{}.db'.format(timeFrame))
 c = connection.cursor()
 
 
@@ -38,29 +38,29 @@ def transaction_bldr(sql):
 
 def sql_insert_replace_comment(commentid, parentid, parent, comment, subreddit, time, score):
     try:
-        sql = """UPDATE parent_reply SET parent_id = ?, comment_id = ?, parent = ?, comment = ?, subreddit = ?, unix = ?, score = ? WHERE parent_id =?;""".format(
+        script = """UPDATE parent_reply SET parent_id = ?, comment_id = ?, parent = ?, comment = ?, subreddit = ?, unix = ?, score = ? WHERE parent_id =?;""".format(
             parentid, commentid, parent, comment, subreddit, int(time), score, parentid)
-        transaction_bldr(sql)
+        transaction_bldr(script)
     except Exception as e:
         print('s-UPDATE insertion', str(e))
 
 
 def sql_insert_has_parent(commentid, parentid, parent, comment, subreddit, time, score):
     try:
-        sql = """INSERT INTO parent_reply (parent_id, comment_id, parent, comment, subreddit, unix, score) VALUES ("{}","{}","{}","{}","{}",{},{});""".format(
+        script = """INSERT INTO parent_reply (parent_id, comment_id, parent, comment, subreddit, unix, score) VALUES ("{}","{}","{}","{}","{}",{},{});""".format(
             parentid, commentid, parent, comment, subreddit, int(time), score)
-        transaction_bldr(sql)
+        transaction_bldr(script)
     except Exception as e:
         print('s-PARENT insertion', str(e))
 
 
 def sql_insert_no_parent(commentid, parentid, comment, subreddit, time, score):
     try:
-        sql = """INSERT INTO parent_reply (parent_id, comment_id, comment, subreddit, unix, score) VALUES ("{}","{}","{}","{}",{},{});""".format(
+        script = """INSERT INTO parent_reply (parent_id, comment_id, comment, subreddit, unix, score) VALUES ("{}","{}","{}","{}",{},{});""".format(
             parentid, commentid, comment, subreddit, int(time), score)
-        transaction_bldr(sql)
-    except Exception as e:
-        print('s-NO_PARENT insertion', str(e))
+        transaction_bldr(script)
+    except Exception as ex:
+        print('s-NO_PARENT insertion', str(ex))
 
 
 def acceptable(data):
@@ -78,29 +78,29 @@ def acceptable(data):
 
 def find_parent(pid):
     try:
-        sql = "SELECT comment FROM parent_reply WHERE comment_id = '{}' LIMIT 1".format(pid)
-        c.execute(sql)
+        script = "SELECT comment FROM parent_reply WHERE comment_id = '{}' LIMIT 1".format(pid)
+        c.execute(script)
         result = c.fetchone()
         if result is not None:
             return result[0]
         else:
             return False
-    except Exception as e:
-        print(str(e))
+    except Exception as ex:
+        print(str(ex))
         return False
 
 
 def find_existing_score(pid):
     try:
-        sql = "SELECT score FROM parent_reply WHERE parent_id = '{}' LIMIT 1".format(pid)
-        c.execute(sql)
+        script = "SELECT score FROM parent_reply WHERE parent_id = '{}' LIMIT 1".format(pid)
+        c.execute(script)
         result = c.fetchone()
         if result is not None:
             return result[0]
         else:
             return False
-    except Exception as e:
-        print(str(e))
+    except Exception as ex:
+        print(str(ex))
         return False
 
 
@@ -109,8 +109,8 @@ if __name__ == '__main__':
     row_counter = 0
     paired_rows = 0
 
-    # with open('J:/chatdata/reddit_data/{}/RC_{}'.format(timeframe.split('-')[0],timeframe), buffering=1000) as f:
-    with open('D:/Chatbot/src/reddit_data/{}/R_{}'.format(timeframe.split('-')[0], timeframe), buffering=1000) as f:
+    # with open('J:/chatdata/reddit_data/{}/RC_{}'.format(timeFrame.split('-')[0],timeFrame), buffering=1000) as f:
+    with open('D:/Chatbot/src/reddit_data/{}/R_{}'.format(timeFrame.split('-')[0], timeFrame), buffering=1000) as f:
         for row in f:
             print(row)
             # time.sleep(555)
